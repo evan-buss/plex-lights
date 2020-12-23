@@ -11,4 +11,4 @@
    - Click any of list item to autofill the form inputs.
 7. Click "Save" on the form. Your configuration will appear.
    - Each client id can have multiple light bulbs associated with it.
-8. Play something on plex and the light will go off. Pause and it will come back on.
+8. Play something on plex and the light(s) will go off. Pause it/they will come back on.

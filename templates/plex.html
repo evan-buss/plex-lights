@@ -31,17 +31,16 @@
     <h2>Configurations</h2>
 
     {% if clients|length == 0 %}
-      <p>0 saved configurations</p>
+    <p>0 saved configurations</p>
     {% else %}
-      <ul>
-        {% for client_id, bulb_ips in clients.items() %}
-          <li class="client-config">
-            {{client_id|e}} - {{bulb_ips|join(', ')|e}}
-            <button data-config="{{client_id}}" class="delete-config">Delete</button>
-          </li>
-          
-        {% endfor %}
-      </ul>
+    <ul>
+    {% for client_id, bulb_ips in clients.items() %}
+      <li class="client-config">
+        {{client_id|e}} - {{bulb_ips|join(', ')|e}}
+        <button data-config="{{client_id}}" class="delete-config">Delete</button>
+      </li>
+    {% endfor %}
+    </ul>
     {% endif %}
 
     <h2>Discovered Lights</h2>
@@ -49,52 +48,50 @@
     <button onclick="refreshBulbs()">Refresh</button>
 
     {% if available_bulbs|length == 0 %}
-      <p>0 bulbs discovered</p>
+    <p>0 bulbs discovered</p>
     {% else %}
     <ul>
-      {% for ip in available_bulbs %}
-        <li class="bulb-ip">{{ip}}</li>
-      {% endfor %}
-      </ul>
+    {% for ip in available_bulbs %}
+      <li class="bulb-ip">{{ip}}</li>
+    {% endfor %}
+    </ul>
     {% endif %}
    
-
     <h2>Plex Devices</h2>
 
     {% if history|length == 0 %}
-      <p>0 items</p>
+    <p>0 items</p>
     {% else %}
-      <ul>
-        {% for item in history %}
-        <li class="history-item">{{item[0]}} - {{item[1]}}</li>
-        {% endfor %}
-      <ul>
+    <ul>
+      {% for item in history %}
+      <li class="history-item">{{item[0]}} - {{item[1]}}</li>
+      {% endfor %}
+    <ul>
     {% endif %}
   </body>
 
   <script>
-
-    // Click a history item to autofill the client id form field
+    // Click a history item to autofill the client id form field.
     const clientIdInput = document.getElementsByName("client_id")[0];
     const historyItems = document.getElementsByClassName("history-item");
     for (let item of historyItems) {
       item.onclick = () => clientIdInput.value = item.innerText.split(" - ")[1];
     }
 
-    // Click a saved configuration to autofill the client id form field
+    // Click a saved configuration to autofill the client id form field.
     const clientConfigs = document.getElementsByClassName("client-config");
     for (let item of clientConfigs) {
       item.onclick = () => clientIdInput.value = item.innerText.split(" - ")[0];
     }
 
-    // Click a bulb ip address to autofill the ip address form field
+    // Click a bulb ip address to autofill the ip address form field.
     const bulbIpInput = document.getElementsByName("bulb_ip")[0];
     const bulbIps = document.getElementsByClassName("bulb-ip");
     for (let item of bulbIps) {
       item.onclick = () => bulbIpInput.value = item.innerText;
     }
-    
-    // Click a delete button to remove a configuration
+
+    // Click a delete button to remove a configuration.
     const deleteButtons = document.getElementsByClassName("delete-config");
     for (let button of deleteButtons) {
       button.onclick = (event) => deleteConfig(event, button.dataset.config);
