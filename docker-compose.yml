@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  plex-lights:
+    build: .
+    container_name: plex-lights
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.plexlights.rule=Host(`plex-lights.terminus`)"
+      - "com.centurylinklabs.watchtower.enable=false"
+
+networks:
+  default:
+    external:
+      name: traefik

@@ -12,3 +12,7 @@
 7. Click "Save" on the form. Your configuration will appear.
    - Each client id can have multiple light bulbs associated with it.
 8. Play something on plex and the light(s) will go off. Pause it/they will come back on.
+
+## Issues
+
+- Bulb discovery doesn't work in Docker container. Tryin to figure out the cause.
