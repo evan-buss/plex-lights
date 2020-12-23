@@ -8,8 +8,12 @@
       href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
     />
     <style>
-      .history-item, .client-config {
+      li {
         cursor: pointer;
+      }
+      
+      .delete-config {
+        margin-left: 1em;
       }
     </style>
     <title>Plex Lights</title>
@@ -17,24 +21,48 @@
   <body>
     <h1>Plex Lights</h1>
 
-    <h2>Configuration</h2>
-
-    {% for client_id, bulb_ips in clients.items() %}
-      <p class="client-config">{{client_id|e}} - {{bulb_ips|join(', ')|e}}</p>
-    {% endfor %}
-
-    <h3>Add Bulb</h3>
+    <h2>Add Bulb</h3>
     <form action="/add" method="post">
       <input name="client_id" type="text" placeholder="Client ID" required/>
       <input name="bulb_ip" type="tel" placeholder="Bulb IP" required/>
-      <input type="submit" value="Submit"/>
+      <input type="submit" value="Save"/>
     </form>
 
-    <h2>Lights</h2>
+    <h2>Configurations</h2>
 
-    <h2>History</h2>
+    {% if clients|length == 0 %}
+      <p>0 saved configurations</p>
+    {% else %}
+      <ul>
+        {% for client_id, bulb_ips in clients.items() %}
+          <li class="client-config">
+            {{client_id|e}} - {{bulb_ips|join(', ')|e}}
+            <button data-config="{{client_id}}" class="delete-config">Delete</button>
+          </li>
+          
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <h2>Discovered Lights</h2>
+
+    <button onclick="refreshBulbs()">Refresh</button>
+
+    {% if available_bulbs|length == 0 %}
+      <p>0 bulbs discovered</p>
+    {% else %}
+    <ul>
+      {% for ip in available_bulbs %}
+        <li class="bulb-ip">{{ip}}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+   
+
+    <h2>Plex Devices</h2>
+
     {% if history|length == 0 %}
-      <p>{{history|length}} items</p>
+      <p>0 items</p>
     {% else %}
       <ul>
         {% for item in history %}
@@ -45,24 +73,46 @@
   </body>
 
   <script>
+
+    // Click a history item to autofill the client id form field
+    const clientIdInput = document.getElementsByName("client_id")[0];
     const historyItems = document.getElementsByClassName("history-item");
-    const clientConfigs = document.getElementsByClassName("client-config");
-    const input = document.getElementsByName("client_id")[0];
-
     for (let item of historyItems) {
-      item.onclick = () => input.value = item.innerText.split(" - ")[1];
+      item.onclick = () => clientIdInput.value = item.innerText.split(" - ")[1];
     }
 
+    // Click a saved configuration to autofill the client id form field
+    const clientConfigs = document.getElementsByClassName("client-config");
     for (let item of clientConfigs) {
-      item.onclick = () => deleteConfig(item.innerText);
+      item.onclick = () => clientIdInput.value = item.innerText.split(" - ")[0];
     }
 
-    async function deleteConfig(config) {
+    // Click a bulb ip address to autofill the ip address form field
+    const bulbIpInput = document.getElementsByName("bulb_ip")[0];
+    const bulbIps = document.getElementsByClassName("bulb-ip");
+    for (let item of bulbIps) {
+      item.onclick = () => bulbIpInput.value = item.innerText;
+    }
+    
+    // Click a delete button to remove a configuration
+    const deleteButtons = document.getElementsByClassName("delete-config");
+    for (let button of deleteButtons) {
+      button.onclick = (event) => deleteConfig(event, button.dataset.config);
+    }
+
+    // Delete a configuration by its client id
+    async function deleteConfig(event, clientId) {
+      event.stopPropagation();
       if (!confirm("Delete this configuration?")) return;
-      const clientId = config.split(" - ")[0];
       await fetch(`/delete/${clientId}`, {
         method: "delete"
       });
+      location.reload();
+    }
+
+    // Asynchronously discover bulbs on the network and refresh when finished.
+    async function refreshBulbs() {
+      await fetch(`/discover`);
       location.reload();
     }
   </script>
