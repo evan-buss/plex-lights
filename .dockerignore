@@ -1,0 +1,6 @@
+config.pickle
+readme.md
+.gitignore
+/env
+/__pycache__
+/.vscode
