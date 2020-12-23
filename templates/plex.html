@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
+    />
+    <style>
+      .history-item, .client-config {
+        cursor: pointer;
+      }
+    </style>
+    <title>Plex Lights</title>
+  </head>
+  <body>
+    <h1>Plex Lights</h1>
+
+    <h2>Configuration</h2>
+
+    {% for client_id, bulb_ips in clients.items() %}
+      <p class="client-config">{{client_id|e}} - {{bulb_ips|join(', ')|e}}</p>
+    {% endfor %}
+
+    <h3>Add Bulb</h3>
+    <form action="/add" method="post">
+      <input name="client_id" type="text" placeholder="Client ID" required/>
+      <input name="bulb_ip" type="tel" placeholder="Bulb IP" required/>
+      <input type="submit" value="Submit"/>
+    </form>
+
+    <h2>Lights</h2>
+
+    <h2>History</h2>
+    {% if history|length == 0 %}
+      <p>{{history|length}} items</p>
+    {% else %}
+      <ul>
+        {% for item in history %}
+        <li class="history-item">{{item[0]}} - {{item[1]}}</li>
+        {% endfor %}
+      <ul>
+    {% endif %}
+  </body>
+
+  <script>
+    const historyItems = document.getElementsByClassName("history-item");
+    const clientConfigs = document.getElementsByClassName("client-config");
+    const input = document.getElementsByName("client_id")[0];
+
+    for (let item of historyItems) {
+      item.onclick = () => input.value = item.innerText.split(" - ")[1];
+    }
+
+    for (let item of clientConfigs) {
+      item.onclick = () => deleteConfig(item.innerText);
+    }
+
+    async function deleteConfig(config) {
+      if (!confirm("Delete this configuration?")) return;
+      const clientId = config.split(" - ")[0];
+      await fetch(`/delete/${clientId}`, {
+        method: "delete"
+      });
+      location.reload();
+    }
+  </script>
+</html>
