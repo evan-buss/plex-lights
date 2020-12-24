@@ -16,3 +16,4 @@
 ## Issues
 
 - Bulb discovery doesn't work in Docker container. Tryin to figure out the cause.
+- Global state / pickle doesn't work because the deployment model is multi-process and data has to be shared through a database.

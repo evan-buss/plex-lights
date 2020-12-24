@@ -1,86 +1,93 @@
 import asyncio
 import json
-from typing import List
 
 from fastapi import FastAPI, Form
+from fastapi.params import Depends
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pywizlight import wizlight
-from pywizlight.discovery import find_wizlights
+from sqlalchemy.orm.session import Session
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
 
-from util import *
+from database import crud
+from database.database import Base, SessionLocal, engine
 
 app = FastAPI()
+
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
 
 
-data = load_data()
+Base.metadata.create_all(bind=engine)
 
 
-@app.middleware("http")
-async def persist_data_middleware(request: Request, call_next):
-    response = await call_next(request)
-    persist_data(data)
-    return response
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @app.get("/", response_class=HTMLResponse)
-async def management_page(request: Request):
+async def management_page(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse(
-        "plex.html",
+        "index.jinja",
         {
             "request": request,
-            "history": data.history,
-            "clients": data.clients,
-            "available_bulbs": data.available_bulbs,
+            "devices": crud.get_devices(db),
+            "configs": crud.get_configs(db),
+            "lights": crud.get_lights(db),
         },
     )
 
 
-@app.get("/discover", response_model=List[str])
-async def discover_lights():
-    bulbs = await find_wizlights(broadcast_address="192.168.1.255")
-    data.available_bulbs = [bulb.ip_address for bulb in bulbs]
-    return data.available_bulbs
-
-
-@app.post("/add", response_class=RedirectResponse)
-async def add_config(client_id: str = Form(...), bulb_ip: str = Form(...)):
-    client_id = client_id.strip()
-    bulb_ips = data.clients.get(client_id, set())
-    bulb_ips.add(bulb_ip)
-    data.clients[client_id] = bulb_ips
+@app.post("/add_config", response_class=RedirectResponse)
+async def add_config(
+    db: Session = Depends(get_db),
+    name: str = Form(...),
+    light_id: int = Form(...),
+    device_id: int = Form(...),
+):
+    crud.create_config(db, name, light_id, device_id)
     return RedirectResponse("/", status_code=302)
 
 
-@app.delete("/delete/{client_id}")
-async def delete_config(client_id: str):
-    try:
-        del data.clients[client_id]
-    except:
-        pass
+@app.delete("/delete/{config_id}")
+async def delete_config(config_id: int, db: Session = Depends(get_db)):
+    crud.delete_config(db, config_id)
+
+
+@app.post("/add_light", response_class=RedirectResponse)
+async def add_light(
+    db: Session = Depends(get_db), name: str = Form(...), ip: str = Form(...)
+):
+    crud.create_light(db, name, ip)
+    return RedirectResponse("/", status_code=302)
 
 
 @app.post("/hook")
-async def plex_hook(request: Request):
+async def plex_hook(request: Request, db: Session = Depends(get_db)):
     form = await request.form()
     payload = json.loads(form["payload"])
     client_name = payload["Player"]["title"]
     client_id = payload["Player"]["uuid"]
 
-    data.history.add((client_name, client_id))
+    crud.upsert_device(db, client_name, client_id)
 
-    bulb_ips = data.clients.get(client_id, None)
-    if bulb_ips:
-        event = payload["event"]
-        bulbs = [wizlight(x) for x in bulb_ips]
-        tasks = []
-        for bulb in bulbs:
-            if event == "media.play" or event == "media.resume":
-                tasks.append(asyncio.create_task(bulb.turn_off()))
-            elif event == "media.pause" or event == "media.stop":
-                tasks.append(asyncio.create_task(bulb.turn_on()))
+    config = crud.get_config_by_device(db, client_id)
 
-        await asyncio.gather(*tasks)
+    event = payload["event"]
+    bulbs = [wizlight(x.ip) for x in config.lights]
+    tasks = []
+    for bulb in bulbs:
+        if event == "media.play" or event == "media.resume":
+            tasks.append(asyncio.create_task(bulb.turn_off()))
+        elif event == "media.pause" or event == "media.stop":
+            tasks.append(asyncio.create_task(bulb.turn_on()))
+
+    await asyncio.gather(*tasks)

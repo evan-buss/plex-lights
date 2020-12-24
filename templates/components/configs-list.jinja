@@ -1,0 +1,53 @@
+<h3 class="mb-3">Current Configs</h2>
+
+{% if configs|length == 0 %}
+<p class="lead">No saved configurations.</p>
+{% else %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+{% for config in configs %}
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">{{config.name}}</h5>
+                        <h6 class="card-subtitle text-secondary mb-2">{{config.device.name}}
+                    </div>
+                    <button type="button" data-delete_config="{{config.config_id}}" class="btn-close" aria-label="Delete Configuration"></button>
+                </div>
+
+                <ul class="list-group">
+                {% for light in config.lights %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <img src="/static/light-bulb.svg" alt="" width="18" height="18" title="light-bulb">
+                            {{light.name}}
+                        </span>
+                        <span class="badge bg-primary rounded-pill">{{light.ip}}</span>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+{% endif %}
+
+<script>
+ // Click a delete button to remove a configuration.
+ const deleteButtons = document.querySelectorAll("[data-delete_config]");
+ for (let button of deleteButtons) {
+   button.onclick = (event) => deleteConfig(event, button.dataset.delete_config);
+ }
+
+ // Delete a configuration by its client id
+ async function deleteConfig(event, clientId) {
+   event.stopPropagation();
+   if (!confirm("Delete this configuration?")) return;
+   await fetch(`/delete/${clientId}`, {
+     method: "delete",
+   });
+   location.reload();
+ }
+</script>

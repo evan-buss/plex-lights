@@ -1,0 +1,48 @@
+ <h3 class="mb-3">Create Configuration</h2>
+ 
+ <form action="/add_config" method="post">
+    {% if lights|length > 0 and devices|length > 0%}
+    <div class="row g-3 justify-content-center mb-3">
+        <div class="col col-md-8">
+            <input type="text" name="name" class="form-control" placeholder="Configuration Name" aria-label="Configuration Name">
+        </div>
+    </div>
+
+    <div class="row g-3 justify-content-center">
+        <div class="col-12 col-md-4">    
+            {% if lights|length == 0 %}
+            <p class="lead">No saved lights.</p>
+            {% else %} 
+
+            <select class="form-select" name="light_id" aria-label="light-select" required>
+                <option value="" selected>Select a light</option>
+                {% for light in lights %}
+                <option value="{{light.light_id}}">{{light.name}}-{{light.ip}}</option>
+                {% endfor %} 
+            </select>
+
+            {% endif %}
+        </div>
+
+        <div class="col-12 col-md-4">
+            {% if devices|length == 0 %}
+            <p class="lead">No Plex devices found.</p>
+            {% else %} 
+            
+            <select class="form-select" name="device_id" aria-label="light-select" required>
+                <option value="" selected>Select a Plex device</option>
+                {% for device in devices %}
+                <option value="{{device.device_id}}">{{device.name}}-{{device.client_id}}</option>
+                {% endfor %}
+            </select>
+
+            {% endif %}
+        </div>
+    
+    </div>
+
+    <div class="d-grid gap-2 col-8 col-md-3 my-3 mx-auto">
+        <input class="btn btn-primary" type="submit" value="Create Config" />
+    </div>
+    {% endif %}
+</form>
