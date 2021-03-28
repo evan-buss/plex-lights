@@ -4,3 +4,4 @@ readme.md
 /env
 /__pycache__
 /.vscode
+plex_lights.db

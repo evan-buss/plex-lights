@@ -1,0 +1,11 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="container">
+    <vc:config-list/>
+    <vc:light-list lights="@Model.Lights"/>
+    <vc:config-form devices="@Model.Devices" lights="@Model.Lights"/>
+</div>

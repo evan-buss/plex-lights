@@ -4,3 +4,7 @@
 **.pickle
 **.pyc
 **.db
+
+
+**/bin
+**/obj

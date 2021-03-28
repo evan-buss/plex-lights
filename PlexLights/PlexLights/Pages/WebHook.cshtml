@@ -1,0 +1,41 @@
+﻿@page
+@model PlexLights.Pages.WebHook
+
+@{
+    ViewData["Title"] = "WebHook History";
+}
+
+<div id="code-block" class="border rounded">
+    @foreach (var record in Model.Items)
+    {
+        <h1>Test</h1>
+    }
+    <code>Sunday, March 28 2021 - 12:38AM -- Evan's Iphone</code>
+</div>
+
+<form asp-asp-page-handler="WebHook" method="post">
+    <button type="submit">Submit</button>
+</form>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+
+<script>
+    console.log("starting connection");
+    let connection = new signalR.HubConnectionBuilder().withUrl("/activity").build();
+
+    connection.on("SendActivity", (message) => {
+        console.log(message);
+    });
+
+    connection.start();
+</script>
+
+<style>
+    #code-block {
+        /*min-height: 400px;*/
+        height: 100%;
+        margin-top: 40px;
+        margin-bottom: 40px;
+        padding: 20px;
+    }
+</style>

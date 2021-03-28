@@ -82,12 +82,21 @@ async def plex_hook(request: Request, db: Session = Depends(get_db)):
     config = crud.get_config_by_device(db, client_id)
 
     event = payload["event"]
+    print(event)
     bulbs = [wizlight(x.ip) for x in config.lights]
     tasks = []
     for bulb in bulbs:
         if event == "media.play" or event == "media.resume":
-            tasks.append(asyncio.create_task(bulb.turn_off()))
+            tasks.append(
+                asyncio.create_task(
+                    bulb.turn_on(PilotBuilder(warm_white=255, brightness=0))
+                )
+            )
         elif event == "media.pause" or event == "media.stop":
-            tasks.append(asyncio.create_task(bulb.turn_on()))
+            tasks.append(
+                asyncio.create_task(
+                    bulb.turn_on(PilotBuilder(warm_white=255, brightness=255))
+                )
+            )
 
     await asyncio.gather(*tasks)
