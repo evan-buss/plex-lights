@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.31019.35
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexLights", "PlexLights\PlexLights.csproj", "{6D89BE6E-A59F-4722-9650-B7D2D91B45C7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexLights.Tests", "PlexLights.Tests\PlexLights.Tests.csproj", "{C7CDCB6A-21A6-485E-9A0A-FDD16CC0294D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WiZ", "PlexLights.WiZ\WiZ.csproj", "{83084C28-A994-4788-B9B3-D81F90156B75}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{6D89BE6E-A59F-4722-9650-B7D2D91B45C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D89BE6E-A59F-4722-9650-B7D2D91B45C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D89BE6E-A59F-4722-9650-B7D2D91B45C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7CDCB6A-21A6-485E-9A0A-FDD16CC0294D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7CDCB6A-21A6-485E-9A0A-FDD16CC0294D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7CDCB6A-21A6-485E-9A0A-FDD16CC0294D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7CDCB6A-21A6-485E-9A0A-FDD16CC0294D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83084C28-A994-4788-B9B3-D81F90156B75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83084C28-A994-4788-B9B3-D81F90156B75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83084C28-A994-4788-B9B3-D81F90156B75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83084C28-A994-4788-B9B3-D81F90156B75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

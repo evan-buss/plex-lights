@@ -13,5 +13,6 @@ namespace PlexLights.Infrastructure
         public DbSet<Device> Devices { get; set; }
         public DbSet<Light> Lights { get; set; }
         public DbSet<Config> Configs { get; set; }
+        public DbSet<History> Audit { get; set; }
     }
 }

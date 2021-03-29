@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PlexLights.Infrastructure;
-using PlexLights.Repositories;
 using PlexLights.Services;
 
 namespace PlexLights
@@ -28,12 +27,10 @@ namespace PlexLights
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddDbContext<Context>(opts => opts.UseSqlite(Configuration.GetConnectionString("Context")));
-            services.AddTransient<ConfigurationRepository>();
-            services.AddTransient<LightRepository>();
-            services.AddTransient<DeviceRepository>();
-            services.AddTransient<WebHookService>();
             services.AddSignalR();
+            services.AddDbContext<Context>(opts => opts.UseSqlite(Configuration.GetConnectionString("Context")));
+
+            services.AddHostedService<BackgroundLightService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

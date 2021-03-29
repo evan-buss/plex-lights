@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PlexLights.Models;
-using PlexLights.Repositories;
 
 namespace PlexLights.Pages.Shared.Components.LightList
 {

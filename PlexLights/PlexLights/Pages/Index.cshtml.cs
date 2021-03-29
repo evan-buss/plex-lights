@@ -1,31 +1,24 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PlexLights.Entities;
+using PlexLights.Infrastructure;
 using PlexLights.Models;
-using PlexLights.Repositories;
 
 namespace PlexLights.Pages
 {
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-        private readonly ConfigurationRepository _configRepository;
-        private readonly LightRepository _lightRepository;
-        private readonly DeviceRepository _deviceRepository;
+        private readonly Context context;
 
-        public IndexModel(ILogger<IndexModel> logger, ConfigurationRepository configRepository,
-            LightRepository lightRepository, DeviceRepository deviceRepository)
+        public IndexModel(ILogger<IndexModel> logger, Context context)
         {
             _logger = logger;
-            _configRepository = configRepository;
-            _lightRepository = lightRepository;
-            _deviceRepository = deviceRepository;
+            this.context = context;
         }
 
         public IEnumerable<Light> Lights { get; set; }
@@ -33,19 +26,33 @@ namespace PlexLights.Pages
 
         public async Task OnGetAsync()
         {
-            Lights = await _lightRepository.GetAllLights();
-            Devices = await _deviceRepository.GetAllDevices();
+            Lights = await context.Lights.ToListAsync();
+            Devices = await context.Devices.ToListAsync();
         }
 
         public async Task<IActionResult> OnPostAddLightAsync([FromForm] string lightName, [FromForm] string lightIp)
         {
-            await _lightRepository.SaveLight(lightName, lightIp);
+            context.Lights.Add(new Light()
+            {
+                Name = lightName,
+                IPAddress = lightIp
+            });
+
+            await context.SaveChangesAsync();
+
             return RedirectToPage("Index");
         }
 
         public async Task<IActionResult> OnPostAddConfigAsync(CreateConfig config)
         {
-            await _configRepository.CreateConfiguration(config);
+            context.Configs.Add(new Config()
+            {
+                Name = config.Name,
+                DeviceId = config.DeviceId,
+                IsActive = true
+            });
+
+            await context.SaveChangesAsync();
             return RedirectToPage("Index");
         }
     }

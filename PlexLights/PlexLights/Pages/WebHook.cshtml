@@ -8,14 +8,10 @@
 <div id="code-block" class="border rounded">
     @foreach (var record in Model.Items)
     {
-        <h1>Test</h1>
+        <code style="display: block">@record.Date.ToString("f") -- @record.EventType --  @record.Title on @record.Device.Name</code>    
     }
-    <code>Sunday, March 28 2021 - 12:38AM -- Evan's Iphone</code>
+    
 </div>
-
-<form asp-asp-page-handler="WebHook" method="post">
-    <button type="submit">Submit</button>
-</form>
 
 <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
 
@@ -23,8 +19,9 @@
     console.log("starting connection");
     let connection = new signalR.HubConnectionBuilder().withUrl("/activity").build();
 
-    connection.on("SendActivity", (message) => {
-        console.log(message);
+    connection.on("SendActivity", (history) => {
+        console.log(history);
+        $('#code-block').append(`<code style="display: block;">${history.date} -- ${history.device.name}</code>`);
     });
 
     connection.start();
@@ -32,7 +29,6 @@
 
 <style>
     #code-block {
-        /*min-height: 400px;*/
         height: 100%;
         margin-top: 40px;
         margin-bottom: 40px;

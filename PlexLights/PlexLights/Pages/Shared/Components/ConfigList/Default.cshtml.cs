@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using PlexLights.Models;
-using PlexLights.Repositories;
+using Microsoft.EntityFrameworkCore;
+using PlexLights.Infrastructure;
 
 namespace PlexLights.Pages.Shared.Components.ConfigList
 {
     public class ConfigList : ViewComponent
     {
-        private readonly ConfigurationRepository _repository;
+        private readonly Context _context;
 
-        public ConfigList(ConfigurationRepository repository)
+        public ConfigList(Context context)
         {
-            _repository = repository;
+            _context = context;
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var configs = await _repository.GetConfigurations();
+            var configs = await _context.Configs.Include(x => x.Device).Include(x => x.Lights).ToListAsync();
             return View(configs.ToList());
         }
     }

@@ -20,7 +20,7 @@ else
                                 <h5 class="card-title">@config.Name</h5>
                                 <h6 class="card-subtitle text-secondary mb-2">@config.Device.Name</h6>
                             </div>
-                            <button type="button" data-delete_config="@config.Id" class="btn-close" aria-label="Delete Configuration"></button>
+                            <button type="button" data-delete_config="@config.Id" class="close" aria-label="Delete Configuration"></button>
                         </div>
 
                         <ul class="list-group">
@@ -28,7 +28,7 @@ else
                             {
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <span>
-                                        <img src="/static/light-bulb.svg" alt="" width="18" height="18" title="light-bulb">
+                                        <img src="~/light-bulb.svg" alt="" width="18" height="18" title="light-bulb">
                                         @light.Name
                                     </span>
                                     <span class="badge bg-primary rounded-pill">@light.IPAddress</span>
