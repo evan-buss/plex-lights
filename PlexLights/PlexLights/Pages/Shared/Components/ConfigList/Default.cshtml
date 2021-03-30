@@ -1,5 +1,4 @@
-﻿@using PlexLights.Models
-@model List<PlexLights.Entities.Config>
+﻿@model List<PlexLights.Entities.Config>
 
 <h3 class="mb-3">Current Configs</h3>
 
@@ -16,11 +15,9 @@ else
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
-                            <div>
-                                <h5 class="card-title">@config.Name</h5>
-                                <h6 class="card-subtitle text-secondary mb-2">@config.Device.Name</h6>
-                            </div>
-                            <button type="button" data-delete_config="@config.Id" class="close" aria-label="Delete Configuration"></button>
+                            <h5 class="card-title">@config.Name</h5>
+                            <h6 class="card-subtitle text-secondary mb-2">@config.Device.Name</h6>
+                            <button type="button" data-delete_config="@config.Id" class="btn btn-danger" aria-label="Delete Configuration">Delete</button>
                         </div>
 
                         <ul class="list-group">
@@ -50,10 +47,10 @@ else
     }
 
     // Delete a configuration by its client id
-    async function deleteConfig(event, clientId) {
+    async function deleteConfig(event, configId) {
       event.stopPropagation();
       if (!confirm("Delete this configuration?")) return;
-      await fetch(`/delete/${clientId}`, {
+      await fetch(`/api/config/${configId}`, {
         method: "delete",
       });
       location.reload();

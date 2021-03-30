@@ -13,7 +13,7 @@ namespace PlexLights.Pages.Shared.Components.ConfigForm
 {
     public class ConfigForm : ViewComponent
     {
-        public async Task<IViewComponentResult> InvokeAsync(IndexViewModel model)
+        public IViewComponentResult Invoke(IndexViewModel model)
         {
             return View(model);
         }

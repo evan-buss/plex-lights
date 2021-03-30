@@ -3,9 +3,9 @@
 </script>
 
 <main>
-	<h1>Hello world!</h1>
+	<h1>Svelte is cool</h1>
 
-	<Counter />
+	<Counter count={10} />
 
 	<p>Visit <a href="https://svelte.dev">svelte.dev</a> to learn how to build Svelte apps.</p>
 </main>
