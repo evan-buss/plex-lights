@@ -5,7 +5,7 @@
 }
 
 <div class="container">
-    <vc:config-list/>
-    <vc:light-list lights="@Model.Lights"/>
-    <vc:config-form devices="@Model.Devices" lights="@Model.Lights"/>
+    <vc:config-list />
+    <vc:light-form />
+    <vc:config-form  model="@Model.ViewModel"/>
 </div>

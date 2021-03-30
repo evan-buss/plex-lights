@@ -1,58 +1,42 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using PlexLights.Entities;
+using PlexLights.Features.Configs;
+using PlexLights.Features.Devices;
+using PlexLights.Features.Lights;
 using PlexLights.Infrastructure;
-using PlexLights.Models;
+using PlexLights.ViewModels;
 
 namespace PlexLights.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
-        private readonly Context context;
+        private readonly IMediator _mediator;
 
-        public IndexModel(ILogger<IndexModel> logger, Context context)
+        public IndexModel(ILogger<IndexModel> logger, Context context, IMediator mediator)
         {
-            _logger = logger;
-            this.context = context;
+            _mediator = mediator;
         }
 
-        public IEnumerable<Light> Lights { get; set; }
-        public IEnumerable<Device> Devices { get; set; }
+        public IndexViewModel ViewModel { get; } = new();
 
         public async Task OnGetAsync()
         {
-            Lights = await context.Lights.ToListAsync();
-            Devices = await context.Devices.ToListAsync();
+            ViewModel.Lights = await _mediator.Send(new GetLights.Request());
+            ViewModel.Devices = await _mediator.Send(new GetDevices.Request());
         }
 
         public async Task<IActionResult> OnPostAddLightAsync([FromForm] string lightName, [FromForm] string lightIp)
         {
-            context.Lights.Add(new Light()
-            {
-                Name = lightName,
-                IPAddress = lightIp
-            });
-
-            await context.SaveChangesAsync();
-
+            await _mediator.Send(new AddLight.Request {Name = lightName, IP = lightIp});
             return RedirectToPage("Index");
         }
 
-        public async Task<IActionResult> OnPostAddConfigAsync(CreateConfig config)
+        public async Task<IActionResult> OnPostAddConfigAsync([FromForm] AddConfig.Request request)
         {
-            context.Configs.Add(new Config()
-            {
-                Name = config.Name,
-                DeviceId = config.DeviceId,
-                IsActive = true
-            });
-
-            await context.SaveChangesAsync();
+            await _mediator.Send(request);
             return RedirectToPage("Index");
         }
     }
